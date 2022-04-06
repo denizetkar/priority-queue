@@ -24,7 +24,7 @@ class Graph:
         dists = [float("inf")] * len(self.adjacencies)
         dists[start_idx] = 0
         visited_nodes = set()
-        node_q = PriorityQueue([(dist, i) for i, dist in enumerate(dists)])
+        node_q = PriorityQueue([(dist, node_idx) for node_idx, dist in enumerate(dists)])
         while len(node_q) > 0:
             dist, node_idx = node_q.pop()
             dists[node_idx] = dist

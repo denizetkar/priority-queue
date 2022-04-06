@@ -56,17 +56,11 @@ class PriorityQueue:
 
     def _swap_elems(self, i, j):
         elem1, elem2 = self[i], self[j]
-        self._heap[j], self._heap[i] = elem2, elem1
+        self._heap[i], self._heap[j] = elem2, elem1
         self._remove_elem_idx(elem=elem1, idx=i)
         self._add_elem_idx(elem=elem1, idx=j)
         self._remove_elem_idx(elem=elem2, idx=j)
         self._add_elem_idx(elem=elem2, idx=i)
-
-    def _needs_bubble_up(self, i):
-        if i == 0:
-            return False
-        parent_idx = self.parent_idx(i)
-        return self.has_higher_priority(self[i], self[parent_idx])
 
     def _bubble_up(self, i):
         while True:
@@ -77,18 +71,6 @@ class PriorityQueue:
                 return
             self._swap_elems(parent_idx, i)
             i = parent_idx
-
-    def _needs_bubble_down(self, i):
-        left_child_idx = self.left_child_idx(i)
-        right_child_idx = self.right_child_idx(i)
-        if left_child_idx >= len(self):
-            return False
-        prio_idx = left_child_idx
-        if right_child_idx < len(self):
-            if self.has_higher_priority(self[right_child_idx], self[prio_idx]):
-                prio_idx = right_child_idx
-
-        return self.has_higher_priority(self[prio_idx], self[i])
 
     def _bubble_down(self, i):
         left_child_idx = self.left_child_idx(i)
@@ -130,6 +112,7 @@ class PriorityQueue:
             return None
         self._swap_elems(0, len(self) - 1)
         elem = self._remove_last()
+        self._bubble_down(0)
         return elem
 
     def update_elem(self, elem_id, new_elem):
@@ -138,12 +121,13 @@ class PriorityQueue:
             return
         idx = next(iter(elem_idxs))
 
+        elem = self._heap[idx]
         self._heap[idx] = new_elem
         self._remove_elem_idx(elem_id=elem_id, idx=idx)
         self._add_elem_idx(elem=new_elem, idx=idx)
-        if self._needs_bubble_up(idx):
+        if self.has_higher_priority(new_elem, elem):
             self._bubble_up(idx)
-        elif self._needs_bubble_down(idx):
+        elif self.has_higher_priority(elem, new_elem):
             self._bubble_down(idx)
 
     def __repr__(self) -> str:
