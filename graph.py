@@ -11,6 +11,12 @@ class EdgePointer:
     def __hash__(self) -> int:
         return hash(self.idx)
 
+    def __eq__(self, other: "EdgePointer") -> bool:
+        return self.idx == other.idx
+
+    def __repr__(self) -> str:
+        return repr((self.idx, self.weight))
+
 
 class Graph:
     def __init__(self, n):
@@ -35,6 +41,7 @@ class Graph:
                     continue
                 if dists[node_idx] + neighbor.weight < dists[neighbor.idx]:
                     node_q.update_elem(neighbor.idx, (dists[node_idx] + neighbor.weight, neighbor.idx))
+                    dists[neighbor.idx] = dists[node_idx] + neighbor.weight
         return dists
 
     def find_all_distances(self, start_idx):

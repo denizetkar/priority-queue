@@ -67,7 +67,7 @@ class PriorityQueue:
             if i == 0:
                 return
             parent_idx = self.parent_idx(i)
-            if self.has_higher_priority(self[parent_idx], self[i]):
+            if not self.has_higher_priority(self[i], self[parent_idx]):
                 return
             self._swap_elems(parent_idx, i)
             i = parent_idx
