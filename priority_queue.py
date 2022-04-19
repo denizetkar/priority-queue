@@ -128,5 +128,21 @@ class PriorityQueue:
         elif self.has_higher_priority(elem, new_elem):
             self._bubble_down(idx)
 
+    def remove(self, elem_id):
+        idx = self._get_elem_idxs(elem_id=elem_id)
+        if idx is None:
+            return None
+
+        last_idx = len(self) - 1
+        last_elem = self[last_idx]
+        self._swap_elems(idx, last_idx)
+        elem = self._remove_last()
+        if self.has_higher_priority(last_elem, elem):
+            self._bubble_up(idx)
+        elif self.has_higher_priority(elem, last_elem):
+            self._bubble_down(idx)
+
+        return elem
+
     def __repr__(self) -> str:
         return repr(self._heap)
