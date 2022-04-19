@@ -73,18 +73,21 @@ class PriorityQueue:
             i = parent_idx
 
     def _bubble_down(self, i):
-        left_child_idx = self.left_child_idx(i)
-        right_child_idx = self.right_child_idx(i)
-        if left_child_idx >= len(self):
-            return
-        prio_idx = left_child_idx
-        if right_child_idx < len(self):
-            if self.has_higher_priority(self[right_child_idx], self[prio_idx]):
-                prio_idx = right_child_idx
+        while True:
+            left_child_idx = self.left_child_idx(i)
+            right_child_idx = self.right_child_idx(i)
+            if left_child_idx >= len(self):
+                return
+            prio_idx = left_child_idx
+            if right_child_idx < len(self):
+                if self.has_higher_priority(self[right_child_idx], self[prio_idx]):
+                    prio_idx = right_child_idx
 
-        if self.has_higher_priority(self[prio_idx], self[i]):
+            if not self.has_higher_priority(self[prio_idx], self[i]):
+                return
+
             self._swap_elems(i, prio_idx)
-            self._bubble_down(prio_idx)
+            i = prio_idx
 
     def _heapify(self):
         if len(self) == 0:
