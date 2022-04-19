@@ -1,6 +1,3 @@
-from collections import defaultdict
-
-
 class PriorityQueue:
     def __init__(
         self,
@@ -13,7 +10,7 @@ class PriorityQueue:
         self._heap = arr
         self.has_higher_priority = has_higher_priority
         self.id_of = id_of
-        self._elem_idxs = defaultdict(set)
+        self._elem_idxs = {}
         for i, elem in enumerate(self):
             self._add_elem_idx(elem=elem, idx=i)
 
@@ -22,19 +19,18 @@ class PriorityQueue:
     def _get_elem_idxs(self, elem=None, elem_id=None):
         if elem is not None:
             elem_id = self.id_of(elem)
-        return self._elem_idxs[elem_id]
+        return self._elem_idxs.get(elem_id, None)
 
     def _add_elem_idx(self, idx, elem=None, elem_id=None):
         if elem is not None:
             elem_id = self.id_of(elem)
-        self._elem_idxs[elem_id].add(idx)
+        assert self._get_elem_idxs(elem_id=elem_id) is None, "`elem` must not exist"
+        self._elem_idxs[elem_id] = idx
 
-    def _remove_elem_idx(self, idx, elem=None, elem_id=None):
+    def _remove_elem_idx(self, elem=None, elem_id=None):
         if elem is not None:
             elem_id = self.id_of(elem)
-        self._elem_idxs[elem_id].remove(idx)
-        if len(self._elem_idxs[elem_id]) == 0:
-            self._elem_idxs.pop(elem_id, None)
+        self._elem_idxs.pop(elem_id, None)
 
     def __len__(self):
         return len(self._heap)
@@ -57,9 +53,9 @@ class PriorityQueue:
     def _swap_elems(self, i, j):
         elem1, elem2 = self[i], self[j]
         self._heap[i], self._heap[j] = elem2, elem1
-        self._remove_elem_idx(elem=elem1, idx=i)
+        self._remove_elem_idx(elem=elem1)
         self._add_elem_idx(elem=elem1, idx=j)
-        self._remove_elem_idx(elem=elem2, idx=j)
+        self._remove_elem_idx(elem=elem2)
         self._add_elem_idx(elem=elem2, idx=i)
 
     def _bubble_up(self, i):
@@ -107,7 +103,7 @@ class PriorityQueue:
     def _remove_last(self):
         last_idx = len(self) - 1
         elem = self._heap.pop(last_idx)
-        self._remove_elem_idx(elem=elem, idx=last_idx)
+        self._remove_elem_idx(elem=elem)
         return elem
 
     def pop(self):
@@ -119,14 +115,13 @@ class PriorityQueue:
         return elem
 
     def update_elem(self, elem_id, new_elem):
-        elem_idxs = self._get_elem_idxs(elem_id=elem_id)
-        if len(elem_idxs) == 0:
+        idx = self._get_elem_idxs(elem_id=elem_id)
+        if idx is None:
             return
-        idx = next(iter(elem_idxs))
 
         elem = self._heap[idx]
         self._heap[idx] = new_elem
-        self._remove_elem_idx(elem_id=elem_id, idx=idx)
+        self._remove_elem_idx(elem_id=elem_id)
         self._add_elem_idx(elem=new_elem, idx=idx)
         if self.has_higher_priority(new_elem, elem):
             self._bubble_up(idx)
